@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JiazhengfuwuOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jiazhengfuwu_order_uuid_number as jiazhengfuwuOrderUuidNumber
+        ,a.jiazhengfuwu_lianxiren_name as jiazhengfuwuLianxirenName
+        ,a.jiazhengfuwu_lianxiren_phone as jiazhengfuwuLianxirenPhone
+        ,a.jiazhengfuwu_lianxiren_address as jiazhengfuwuLianxirenAddress
+        ,a.jiazhengfuwu_id as jiazhengfuwuId
+        ,a.yonghu_id as yonghuId
+        ,a.yuangong_id as yuangongId
+        ,a.buy_number as buyNumber
+        ,a.jiazhengfuwu_order_true_price as jiazhengfuwuOrderTruePrice
+        ,a.jiazhengfuwu_order_types as jiazhengfuwuOrderTypes
+        ,a.jiazhengfuwu_order_payment_types as jiazhengfuwuOrderPaymentTypes
+        ,a.yuyue_time as yuyueTime
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JiazhengfuwuOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,jiazhengfuwu.jiazhengfuwu_name as jiazhengfuwuName
+        ,jiazhengfuwu.jiazhengfuwu_photo as jiazhengfuwuPhoto
+        ,jiazhengfuwu.jiazhengfuwu_types as jiazhengfuwuTypes
+        ,jiazhengfuwu.jiazhengfuwu_old_money as jiazhengfuwuOldMoney
+        ,jiazhengfuwu.jiazhengfuwu_new_money as jiazhengfuwuNewMoney
+        ,jiazhengfuwu.jiazhengfuwu_clicknum as jiazhengfuwuClicknum
+        ,jiazhengfuwu.jiazhengfuwu_content as jiazhengfuwuContent
+        ,jiazhengfuwu.shangxia_types as shangxiaTypes
+        ,jiazhengfuwu.jiazhengfuwu_delete as jiazhengfuwuDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yuangong.yuangong_uuid_number as yuangongUuidNumber
+        ,yuangong.yuangong_name as yuangongName
+        ,yuangong.yuangong_phone as yuangongPhone
+        ,yuangong.yuangong_photo as yuangongPhoto
+        ,yuangong.yuangong_shanchang as yuangongShanchang
+        ,yuangong.yuangong_email as yuangongEmail
+        ,yuangong.yuangong_content as yuangongContent
+
+        FROM jiazhengfuwu_order  a
+        left JOIN jiazhengfuwu jiazhengfuwu ON a.jiazhengfuwu_id = jiazhengfuwu.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        left JOIN yuangong yuangong ON a.yuangong_id = yuangong.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.jiazhengfuwuOrderUuidNumber != '' and params.jiazhengfuwuOrderUuidNumber != null and params.jiazhengfuwuOrderUuidNumber != 'null' ">
+                and a.jiazhengfuwu_order_uuid_number like CONCAT('%',#{params.jiazhengfuwuOrderUuidNumber},'%')
+            </if>
+            <if test=" params.jiazhengfuwuLianxirenName != '' and params.jiazhengfuwuLianxirenName != null and params.jiazhengfuwuLianxirenName != 'null' ">
+                and a.jiazhengfuwu_lianxiren_name like CONCAT('%',#{params.jiazhengfuwuLianxirenName},'%')
+            </if>
+            <if test=" params.jiazhengfuwuLianxirenPhone != '' and params.jiazhengfuwuLianxirenPhone != null and params.jiazhengfuwuLianxirenPhone != 'null' ">
+                and a.jiazhengfuwu_lianxiren_phone like CONCAT('%',#{params.jiazhengfuwuLianxirenPhone},'%')
+            </if>
+            <if test=" params.jiazhengfuwuLianxirenAddress != '' and params.jiazhengfuwuLianxirenAddress != null and params.jiazhengfuwuLianxirenAddress != 'null' ">
+                and a.jiazhengfuwu_lianxiren_address like CONCAT('%',#{params.jiazhengfuwuLianxirenAddress},'%')
+            </if>
+            <if test="params.jiazhengfuwuId != null and params.jiazhengfuwuId != ''">
+                and (
+                    a.jiazhengfuwu_id = #{params.jiazhengfuwuId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.yuangongId != null and params.yuangongId != ''">
+                and (
+                    a.yuangong_id = #{params.yuangongId}
+                )
+            </if>
+            <if test="params.buyNumberStart != null and params.buyNumberStart != ''">
+                <![CDATA[  and a.buy_number >= #{params.buyNumberStart}   ]]>
+            </if>
+            <if test="params.buyNumberEnd != null and params.buyNumberEnd != ''">
+                <![CDATA[  and a.buy_number <= #{params.buyNumberEnd}   ]]>
+            </if>
+             <if test="params.buyNumber != null and params.buyNumber != ''">
+                and a.buy_number = #{params.buyNumber}
+             </if>
+            <if test="params.jiazhengfuwuOrderTruePriceStart != null ">
+                <![CDATA[  and a.jiazhengfuwu_order_true_price >= #{params.jiazhengfuwuOrderTruePriceStart}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuOrderTruePriceEnd != null ">
+                <![CDATA[  and a.jiazhengfuwu_order_true_price <= #{params.jiazhengfuwuOrderTruePriceEnd}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuOrderTypes != null and params.jiazhengfuwuOrderTypes != ''">
+                and a.jiazhengfuwu_order_types = #{params.jiazhengfuwuOrderTypes}
+            </if>
+            <if test="params.jiazhengfuwuOrderPaymentTypes != null and params.jiazhengfuwuOrderPaymentTypes != ''">
+                and a.jiazhengfuwu_order_payment_types = #{params.jiazhengfuwuOrderPaymentTypes}
+            </if>
+            <if test=" params.yuyueTimeStart != '' and params.yuyueTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.yuyue_time) >= UNIX_TIMESTAMP(#{params.yuyueTimeStart}) ]]>
+            </if>
+            <if test=" params.yuyueTimeEnd != '' and params.yuyueTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.yuyue_time) <= UNIX_TIMESTAMP(#{params.yuyueTimeEnd}) ]]>
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断家政服务的id不为空 -->
+            <if test=" params.jiazhengfuwuIdNotNull != '' and params.jiazhengfuwuIdNotNull != null and params.jiazhengfuwuIdNotNull != 'null' ">
+                and a.jiazhengfuwu_id IS NOT NULL
+            </if>
+            <if test=" params.jiazhengfuwuName != '' and params.jiazhengfuwuName != null and params.jiazhengfuwuName != 'null' ">
+                and jiazhengfuwu.jiazhengfuwu_name like CONCAT('%',#{params.jiazhengfuwuName},'%')
+            </if>
+            <if test="params.jiazhengfuwuTypes != null  and params.jiazhengfuwuTypes != ''">
+                and jiazhengfuwu.jiazhengfuwu_types = #{params.jiazhengfuwuTypes}
+            </if>
+
+            <if test="params.jiazhengfuwuOldMoneyStart != null ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_old_money >= #{params.jiazhengfuwuOldMoneyStart}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuOldMoneyEnd != null ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_old_money <= #{params.jiazhengfuwuOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuNewMoneyStart != null ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_new_money >= #{params.jiazhengfuwuNewMoneyStart}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuNewMoneyEnd != null ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_new_money <= #{params.jiazhengfuwuNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuClicknumStart != null  and params.jiazhengfuwuClicknumStart != '' ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_clicknum >= #{params.jiazhengfuwuClicknumStart}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuClicknumEnd != null  and params.jiazhengfuwuClicknumEnd != '' ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_clicknum <= #{params.jiazhengfuwuClicknumEnd}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuClicknum != null  and params.jiazhengfuwuClicknum != '' ">
+                and jiazhengfuwu.jiazhengfuwu_clicknum = #{params.jiazhengfuwuClicknum}
+            </if>
+            <if test=" params.jiazhengfuwuContent != '' and params.jiazhengfuwuContent != null and params.jiazhengfuwuContent != 'null' ">
+                and jiazhengfuwu.jiazhengfuwu_content like CONCAT('%',#{params.jiazhengfuwuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and jiazhengfuwu.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.jiazhengfuwuDeleteStart != null  and params.jiazhengfuwuDeleteStart != '' ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_delete >= #{params.jiazhengfuwuDeleteStart}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuDeleteEnd != null  and params.jiazhengfuwuDeleteEnd != '' ">
+                <![CDATA[  and jiazhengfuwu.jiazhengfuwu_delete <= #{params.jiazhengfuwuDeleteEnd}   ]]>
+            </if>
+            <if test="params.jiazhengfuwuDelete != null  and params.jiazhengfuwuDelete != '' ">
+                and jiazhengfuwu.jiazhengfuwu_delete = #{params.jiazhengfuwuDelete}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+                <!-- 判断员工的id不为空 -->
+            <if test=" params.yuangongIdNotNull != '' and params.yuangongIdNotNull != null and params.yuangongIdNotNull != 'null' ">
+                and a.yuangong_id IS NOT NULL
+            </if>
+            <if test=" params.yuangongUuidNumber != '' and params.yuangongUuidNumber != null and params.yuangongUuidNumber != 'null' ">
+                and yuangong.yuangong_uuid_number like CONCAT('%',#{params.yuangongUuidNumber},'%')
+            </if>
+            <if test=" params.yuangongName != '' and params.yuangongName != null and params.yuangongName != 'null' ">
+                and yuangong.yuangong_name like CONCAT('%',#{params.yuangongName},'%')
+            </if>
+            <if test=" params.yuangongPhone != '' and params.yuangongPhone != null and params.yuangongPhone != 'null' ">
+                and yuangong.yuangong_phone like CONCAT('%',#{params.yuangongPhone},'%')
+            </if>
+            <if test=" params.yuangongShanchang != '' and params.yuangongShanchang != null and params.yuangongShanchang != 'null' ">
+                and yuangong.yuangong_shanchang like CONCAT('%',#{params.yuangongShanchang},'%')
+            </if>
+            <if test=" params.yuangongEmail != '' and params.yuangongEmail != null and params.yuangongEmail != 'null' ">
+                and yuangong.yuangong_email like CONCAT('%',#{params.yuangongEmail},'%')
+            </if>
+            <if test=" params.yuangongContent != '' and params.yuangongContent != null and params.yuangongContent != 'null' ">
+                and yuangong.yuangong_content like CONCAT('%',#{params.yuangongContent},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
